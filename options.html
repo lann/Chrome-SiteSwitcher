@@ -1,0 +1,96 @@
+<html>
+<head><title>SiteSwap Options</title></head>
+<script type="text/javascript">
+
+$ = function(id) { return document.getElementById(id); };
+
+function save_options() {
+    var rows = $('patterns').children;
+    var pats = [];
+    for (var i=0;i < rows.length;i++) {
+        if (rows[i].getElementsByClassName('pat_domain')[0].value.replace(" ","")) {
+            var row = rows[i].getElementsByTagName('input');
+            var pat = {};
+            for (var j=0;j < row.length;j++) {
+                var inp = row[j];
+                if (inp.className.indexOf('pat_') > -1) {
+                    pat[inp.className.replace('pat_', '')] = inp.value;
+                }
+            }
+            pats.push(pat);
+        }
+    }
+    console.log(pats);
+    localStorage.patterns = JSON.stringify(pats);
+
+    chrome.extension.sendRequest({init_options: true});
+}
+
+// Restores select box state to saved value from localStorage.
+function restore_options() {
+    var pats = JSON.parse(localStorage.patterns || '[]');
+    for (var i=0;i < pats.length; i++) {
+        new_pattern(pats[i]);
+    }
+    if (pats.length) {
+        $('patterns').removeChild($('patterns').children[0]);
+    }
+}
+
+var blank_pattern;
+
+function onload() {
+    blank_pattern = document.getElementById('patterns').children[0].cloneNode(true);
+
+    restore_options();
+}
+
+function new_pattern(vals) {
+    var pat = blank_pattern.cloneNode(true);
+    for (var val in vals) {
+        var inp = pat.getElementsByClassName('pat_' + val);
+        if (inp[0]) { inp[0].value = vals[val]; }
+    }
+    $('patterns').appendChild(pat);
+}
+
+function remove_pattern(node) {
+    var child = node.parentElement.parentElement;
+    child.parentElement.removeChild(child);
+}
+
+</script>
+
+<style type="text/css">
+    #patterns tr:first-child .remove_btn {visibility: hidden;}
+</style>
+
+<body onload="onload();">
+
+    <table>
+        <caption>Patterns</caption>
+        <thead>
+            <tr><th>Name</th><th>Domain</th><th>&nbsp;</th></tr>
+        </thead>
+        <tbody id="patterns">
+            <tr>
+                <td><input class="pat_name"/></td>
+                <td><input class="pat_domain"/></td>
+                <td><input class="remove_btn" type="button" value="X" onclick="remove_pattern(this);"/></td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td><input id="btn_new" type="button" value="New Pattern" onclick="new_pattern();"/></td>
+            </tr>
+            <tr><td>&nbsp;</td></tr>
+            <tr>
+                <td><input id="btn_save" type="button" value="Save" onclick="save_options();"/></td>
+            </tr>
+        </tfoot>
+    </table>
+
+
+
+</body>
+</html>

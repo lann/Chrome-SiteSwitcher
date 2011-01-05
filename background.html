@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript">
+    var urls;
+    var patterns;
+    var keys;
+
+    function init_options() {
+        urls = [];
+        patterns = {};
+        keys = {};
+
+        var pats = JSON.parse(localStorage.patterns || '[]');
+        pats.forEach(function(pat) {
+            var re = RegExp(pat.url, 'i');
+            urls.push(re);
+            patterns[re] = pat;
+        });
+
+        var ks = JSON.parse(localStorage.keys || '{}');
+        for (var k in ks) {
+            keys[ks[k]] = k;
+        }
+    }
+
+    chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+	    
+    });
+
+    chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+        if tab.url
+        for (var i=0;i < urls.length;i++) {
+            if (urls[i].test(tab.url)) {
+                chrome.pageAction.show(tabId);
+                chrome.tabs.executeScript(tabId, {'file': 'event_keys.js'});
+                chrome.tabs.executeScript(tabId, {'file': 'content.js'});
+                chrome.tabs.sendRequest(tabId, {
+                    patterns: patterns[urls[i]],
+                    keys: keys});
+                break;
+            }
+        }
+    });
+
+    init_options();
+
+</script>
+</head>
+</html>

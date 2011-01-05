@@ -1,0 +1,17 @@
+{
+    "name": "SiteSwitcher",
+    "version": "0.1",
+    "description": "Switch between different versions of your site",
+
+    "background_page": "background.html",
+
+    "page_action": {
+        "default_icon": "page-icon.png"
+    },
+
+    "options_page": "options.html",
+
+    "permissions": [
+        "tabs", "http://*/*", "https://*/*"
+    ]
+}
