@@ -7,9 +7,8 @@
 
 function switchTo(url) {
 	chrome.tabs.getSelected(null, function(tab) {
-		try {
 		chrome.tabs.update(tab.id, {url:url});
-		} catch(err) { alert(err); }
+		window.close();
 	});
 }
 
