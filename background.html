@@ -2,45 +2,39 @@
 <html>
 <head>
 <script type="text/javascript">
-    var urls;
     var patterns;
-    var keys;
+    var domains;
 
     function init_options() {
-        urls = [];
-        patterns = {};
-        keys = {};
+        patterns = JSON.parse(localStorage.patterns || '[]');
 
-        var pats = JSON.parse(localStorage.patterns || '[]');
-        pats.forEach(function(pat) {
-            var re = RegExp(pat.url, 'i');
-            urls.push(re);
-            patterns[re] = pat;
-        });
-
-        var ks = JSON.parse(localStorage.keys || '{}');
-        for (var k in ks) {
-            keys[ks[k]] = k;
-        }
+		domains = {};
+		patterns.forEach(function(pat) {
+			domains[pat.domain] = pat;
+		});
     }
 
     chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
-	    
+		if (request.init_options) {
+			init_options();
+		}
+		
+		else if (request.popup_url) {
+			var domain = request.popup_url.split('/')[2];
+			var popupHtml = '<html><body>';
+			patterns.forEach(function(pat) {
+				popupHtml += '<a href="" onclick="switchTo(\'' + request.popup_url.replace(domain, pat.domain) + '\');">' + pat.name + '</a><br/>';
+			});
+			popupHtml += '</body></html>';
+
+			sendResponse({content: popupHtml});
+		}
     });
 
     chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-        if tab.url
-        for (var i=0;i < urls.length;i++) {
-            if (urls[i].test(tab.url)) {
-                chrome.pageAction.show(tabId);
-                chrome.tabs.executeScript(tabId, {'file': 'event_keys.js'});
-                chrome.tabs.executeScript(tabId, {'file': 'content.js'});
-                chrome.tabs.sendRequest(tabId, {
-                    patterns: patterns[urls[i]],
-                    keys: keys});
-                break;
-            }
-        }
+        if (tab.url.split('/')[2] in domains) {
+			chrome.pageAction.show(tabId);
+		}
     });
 
     init_options();

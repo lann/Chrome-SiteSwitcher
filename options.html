@@ -24,6 +24,8 @@ function save_options() {
     localStorage.patterns = JSON.stringify(pats);
 
     chrome.extension.sendRequest({init_options: true});
+
+	$('save_msg').innerHTML = 'Saved';
 }
 
 // Restores select box state to saved value from localStorage.
@@ -86,6 +88,7 @@ function remove_pattern(node) {
             <tr><td>&nbsp;</td></tr>
             <tr>
                 <td><input id="btn_save" type="button" value="Save" onclick="save_options();"/></td>
+				<td id="save_msg"></td>
             </tr>
         </tfoot>
     </table>

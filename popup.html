@@ -1,0 +1,22 @@
+<html>
+    <body>
+    </body>
+</html>
+
+<script type="text/javascript">
+
+function switchTo(url) {
+	chrome.tabs.getSelected(null, function(tab) {
+		try {
+		chrome.tabs.update(tab.id, {url:url});
+		} catch(err) { alert(err); }
+	});
+}
+
+chrome.tabs.getSelected(null, function(tab) {
+	chrome.extension.sendRequest({popup_url: tab.url}, function(response) {
+		document.getElementsByTagName('body')[0].innerHTML = response.content;
+	});
+});
+
+</script>

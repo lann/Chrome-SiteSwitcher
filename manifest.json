@@ -6,7 +6,8 @@
     "background_page": "background.html",
 
     "page_action": {
-        "default_icon": "page-icon.png"
+        "default_icon": "page-icon.png",
+        "default_popup": "popup.html"
     },
 
     "options_page": "options.html",
